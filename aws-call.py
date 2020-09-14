@@ -2,6 +2,7 @@ import boto3
 import json
 import datetime
 import logging
+import pythonjsonlogger
 from pythonjsonlogger import jsonlogger
 
 #starting a pipeline between aws to the 
@@ -20,17 +21,19 @@ instances = ec2.describe_instances(Filters=[{'Name' : 'instance-state-name','Val
 #testing JSON output
 #print(json.dumps(instances['Reservations'][0]['Instances'][0]['LaunchTime'], indent=4, sort_keys=True, default=datetime_handler))
 
-
 #getting only the list of instances info
 #me = instances['Reservations']
 publicip_list = []
 names_list = []
 running_time_list = []
-
-
 num_of_instances = len(instances)
-
 count=0
+time = str(datetime.datetime.today())
+threadName = 'MainThread'
+message = 'testing K8S REPORTING'
+levelname = 'INFO'
+name = 'K8S REPORTS'
+
 while count < num_of_instances:
     instance = instances['Reservations'][count]['Instances'][0]
     publicip_list.append(instance['PublicIpAddress'])
@@ -40,6 +43,7 @@ while count < num_of_instances:
             #get only the tag "Name"
             names_list.append(j["Value"])
     count=count+1
+
 
 report={
     'threadName':'MainThread',
@@ -53,14 +57,20 @@ report={
     "levelname": "INFO",
 }
 
-#testing that 'report' outputs currectly
-#print(json.dumps(report, indent=4, default=datetime_handler))
-
-#starting the JSON to the handler
+class CustomJsonFormatter(jsonlogger.JsonFormatter):
+    def add_fields(self, log_record, record, message_dict):
+        return super().add_fields(log_record, record, message_dict)
+        
+# starting the JSON to the handler
 handler = logging.StreamHandler()
-handler.setFormatter(report)
-logger = logging.getLogger('my_module_name')
+# setting the format for the report
+#format_str = '%(threadName)%(name)%(time)%(num_of_instances)'
+format_str = '%(message)%(levelname)%(name)%(asctime)'
+formatter = pythonjsonlogger.jsonlogger.JsonFormatter(format_str)
+handler.setFormatter(formatter)
+logger = logging.getLogger()
 logger.addHandler(handler)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 # Normally we would attach the handler to the root logger, and this would be unnecessary
+logger.debug(formatter)
 logger.propagate = False
