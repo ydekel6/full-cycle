@@ -21,8 +21,7 @@ instances = ec2.describe_instances(Filters=[{'Name' : 'instance-state-name','Val
 #testing JSON output
 #print(json.dumps(instances['Reservations'][0]['Instances'][0]['LaunchTime'], indent=4, sort_keys=True, default=datetime_handler))
 
-#getting only the list of instances info
-#me = instances['Reservations']
+
 publicip_list = []
 names_list = []
 running_time_list = []
@@ -70,7 +69,7 @@ formatter = pythonjsonlogger.jsonlogger.JsonFormatter(format_str)
 handler.setFormatter(formatter)
 logger = logging.getLogger()
 logger.addHandler(handler)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 # Normally we would attach the handler to the root logger, and this would be unnecessary
 logger.debug(formatter)
 logger.propagate = False
