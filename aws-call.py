@@ -44,7 +44,7 @@ report={
     'instance name': names_list,
     'running time': running_time_list,
     'message': 'testing K8S REPORTING',
-    'levelname': f'{level}'
+    'levelname': 'INFO'
 }
 
 logger.info(report)
