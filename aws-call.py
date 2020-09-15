@@ -25,7 +25,7 @@ count=0
 while count < num_of_instances:
     instance = instances['Reservations'][count]['Instances'][0]
     publicip_list.append(instance['PublicIpAddress'])
-    running_time_list.append(str(datetime.now().replace(tzinfo=None)-instances['Reservations'][0]['Instances'][0]['LaunchTime'].replace(tzinfo=None)))
+    running_time_list.append(str(datetime.now().replace(tzinfo=None)-instance['LaunchTime'].replace(tzinfo=None)))
     for j in instance["Tags"]:
         if j["Key"] == "Name":
             #get only the tag "Name"
