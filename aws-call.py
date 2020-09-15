@@ -1,5 +1,4 @@
 import boto3
-import json
 from datetime import datetime
 import logging
 logging.basicConfig(level=logging.INFO)  #allows seeing INFO level logs
@@ -7,11 +6,6 @@ logging.basicConfig(level=logging.INFO)  #allows seeing INFO level logs
 #starting a pipeline between aws to the 
 ec2 = boto3.client('ec2')
 
-#added the function the fix JSON problem with the datetime exportation of AWS
-def datetime_handler(x):
-    if isinstance(x, datetime):
-        return x.isoformat()
-    raise TypeError("Unknown type")
 
 # create a list of instances according to the filters chosen.
 # this example filters all the ec2 instances that are running.
@@ -24,7 +18,7 @@ instances = ec2.describe_instances(Filters=[{'Name' : 'instance-state-name','Val
 publicip_list = []
 names_list = []
 running_time_list = []
-num_of_instances = len(instances)
+num_of_instances = len(instances['Reservations'][0]['Instances'])
 count=0
 
 
@@ -50,7 +44,7 @@ report={
     'instance name': names_list,
     'running time': running_time_list,
     'message': 'testing K8S REPORTING',
-    'levelname': 'INFO'
+    'levelname': f'{level}'
 }
 
 logger.info(report)
