@@ -16,17 +16,17 @@ COPY --from=builder /usr/src/app/*.py ./
 RUN ["/docker-entrypoint.sh", "pylint"]
 
 # Phase IV - Unit testing
-FROM python:latest as unit-tests
-WORKDIR /usr/src/app
-# Copy all packages instead of rerunning pip install
-COPY --from=builder /wheels /wheels
-RUN     pip install -r /wheels/requirements.txt \
-                      -f /wheels \
-       && rm -rf /wheels \
-       && rm -rf /root/.cache/pip/* 
+#FROM python:latest as unit-tests
+#WORKDIR /usr/src/app
+#Copy all packages instead of rerunning pip install
+#COPY --from=builder /wheels /wheels
+#RUN     pip install -r /wheels/requirements.txt \
+#                      -f /wheels \
+#       && rm -rf /wheels \
+#       && rm -rf /root/.cache/pip/* 
 
-COPY --from=builder /usr/src/app/ ./
-RUN ["make", "test"]
+#COPY --from=builder /usr/src/app/ ./
+#RUN ["make", "test"]
 
 # Phase V - running the script itself
 FROM python:3.8-slim as serve
