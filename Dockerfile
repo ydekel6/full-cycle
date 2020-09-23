@@ -16,13 +16,6 @@ COPY --from=builder /usr/src/app/*.py ./
 COPY --from=builder /usr/src/app/api ./api
 RUN ["/docker-entrypoint.sh", "pylint"]
 
-# Phase III Running Sonarqube scanner (Sonarqube server also required)
-FROM newtmitch/sonar-scanner as sonarqube
-WORKDIR /usr/src
-COPY --from=builder /usr/src/app/*.py ./
-COPY --from=builder /usr/src/app/api ./api
-RUN sonar-scanner -Dsonar.projectBaseDir=/usr/src
-
 # Phase IV - Unit testing
 FROM python:latest as unit-tests
 WORKDIR /usr/src/app
