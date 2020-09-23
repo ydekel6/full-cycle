@@ -3,9 +3,9 @@ FROM python:latest as builder
 # PYTHONUNBUFFERED Force logging to stdout / stderr not to be buffered into ram  
 ENV PYTHONNUNBUFFERED=1
 WORKDIR /usr/src/app
-COPY /flask-api ./
+COPY /app ./
 WORKDIR /wheels
-COPY requirements.txt ./
+COPY app/requirements.txt ./
 RUN pip wheel -r ./requirements.txt
 
 # Phase II - Linting the code
@@ -13,7 +13,6 @@ FROM eeacms/pylint:latest as linting
 WORKDIR /code
 COPY --from=builder /usr/src/app/pylint.cfg /etc/pylint.cfg
 COPY --from=builder /usr/src/app/*.py ./
-COPY --from=builder /usr/src/app/api ./api
 RUN ["/docker-entrypoint.sh", "pylint"]
 
 # Phase IV - Unit testing
@@ -40,5 +39,4 @@ RUN     pip install -r /wheels/requirements.txt \
        && rm -rf /root/.cache/pip/* 
 
 COPY --from=builder /usr/src/app/*.py ./
-COPY --from=builder /usr/src/app/api ./api
 CMD ["python", "aws-call.py"]
